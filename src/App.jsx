@@ -40,7 +40,7 @@ const App = () => {
       if (!assetList) return;
   
       try {
-        const res = await fetch('http://127.0.0.1:5000/init-chat', {
+        const res = await fetch('https://devapi.monetez.com/api/univerze/v1/init-chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ asset_list: assetList }),
@@ -49,7 +49,8 @@ const App = () => {
         if (!res.ok) throw new Error('Init chat API failed');
   
         const data = await res.json();
-        const conversationId = data.conversation_id;
+        const conversationId = data.data.conversation_id;
+        // console.log(conversationId)
   
         if (conversationId) {
           localStorage.setItem('conversation_id', conversationId);

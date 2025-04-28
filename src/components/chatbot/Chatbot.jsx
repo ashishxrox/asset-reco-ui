@@ -19,9 +19,9 @@ const Chatbot = ({ assetList }) => {
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
 
-    useEffect(() => {
-        console.log(assetList)
-    }, [assetList])
+    // useEffect(() => {
+    //     console.log(assetList)
+    // }, [assetList])
 
 
     const cleanMarkdown = (text) => {
@@ -63,7 +63,7 @@ const Chatbot = ({ assetList }) => {
                 content: msg.text,
             }));
 
-            const response = await fetch('http://127.0.0.1:5000/chat', {
+            const response = await fetch('https://devapi.monetez.com/api/univerze/v1/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -74,7 +74,8 @@ const Chatbot = ({ assetList }) => {
             });
 
             const data = await response.json();
-            const modifiedMessage = (data.reply || '😓 No response from AI.').replace(/\n\n/g, '\n');
+            console.log(data.data)
+            const modifiedMessage = (data.data.reply || '😓 No response from AI.').replace(/\n\n/g, '\n');
             console.log(modifiedMessage)
 
             const botMessage = {

@@ -6,7 +6,7 @@ const MarkdownTable = ({ headers, rows }) => {
         <thead>
             <tr>
                 {headers.map((header, i) => (
-                    <th key={i} className="border border-gray-300 px-3 py-1 bg-gray-100">{header}</th>
+                    <th key={i} className="border border-gray-300 px-3 py-1 bg-gray-100">{header.replace(/\*\*/g, '')}</th>
                 ))}
             </tr>
         </thead>
@@ -14,7 +14,7 @@ const MarkdownTable = ({ headers, rows }) => {
             {rows.map((row, i) => (
                 <tr key={i}>
                     {row.map((cell, j) => (
-                        <td key={j} className="border border-gray-300 px-3 py-1">{cell}</td>
+                        <td key={j} className="border border-gray-300 px-3 py-1">{cell.replace(/\*\*/g, '')}</td>
                     ))}
                 </tr>
             ))}
