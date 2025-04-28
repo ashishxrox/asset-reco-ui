@@ -32,7 +32,7 @@ const Chatbot = ({ assetList }) => {
             .replace(/^\s*Allocation Table\s*$/im, '')
             .trim();
     };
-    
+
 
 
 
@@ -115,7 +115,7 @@ const Chatbot = ({ assetList }) => {
         );
         return { headers, rows };
     };
-    
+
 
 
     const handleKeyDown = (e) => {
@@ -126,17 +126,33 @@ const Chatbot = ({ assetList }) => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, isTyping]);
 
+    const handleRefresh = () => {
+        console.log("clicked")
+        window.location.reload(true); // true forces a hard reload from the server
+      };
+
 
 
     return (
         <div className='h-[95vh] w-[85%] rounded-[20px] overflow-hidden flex flex-col justify-between items-center' style={{ boxShadow: "3px 3px 25px #808080" }}>
             {/* Header */}
-            <div className='basis-[15%] header w-full flex items-center gap-[10px] pl-[30px] bg-gradient-to-r from-[#3f89ff] to-[#62b4ff]'>
-                <div className='w-[65px] h-[65px] rounded-full bg-white bg-center bg-cover' style={{ backgroundImage: `url("${Icon}")` }}></div>
-                <div>
-                    <h4 className='text-sm text-white'>Chat with</h4>
-                    <h2 className='text-xl font-bold text-white'>Univerze AI</h2>
+            <div className='basis-[15%] header w-full bg-gradient-to-r from-[#3f89ff] to-[#62b4ff] flex justify-between items-center flex-row'>
+                <div className='basis-[45%] w-full h-full flex items-center gap-[10px] pl-[30px] '>
+
+                    <div className='w-[65px] h-[65px] rounded-full bg-white bg-center bg-cover' style={{ backgroundImage: `url("${Icon}")` }}></div>
+                    <div>
+                        <h4 className='text-sm text-white'>Chat with</h4>
+                        <h2 className='text-xl font-bold text-white'>Univerze AI</h2>
+                    </div>
                 </div>
+                <div className='basis-[20%] w-full h-full flex justify-center items-center'>
+                    <button 
+                    onClick={()=>{handleRefresh()}}
+                    className="px-6 py-3 bg-[white] text-[#30965f] cursor-pointer rounded-[20px] shadow-md hover:shadow-lg  transition-all duration-300 text-lg font-semibold tracking-wide">
+                        Start New Chat
+                    </button>
+                </div>
+
             </div>
             <div className='basis-[70%] w-full overflow-y-auto overflow-x-hidden p-4 bg-white scroll-div'>
                 {/* <div className=' bg-[red] h-[100px] w-[500px] z-[9] top-[-60px] right-[16px] pr-[50px] relative waves flex justify-end items-center'>
@@ -212,7 +228,7 @@ const Chatbot = ({ assetList }) => {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Type your career question here"
+                        placeholder="Need help with marketing campaigns? Ask here."
                         className="w-full border border-gray-300 rounded-[12px] bg-white p-3 pr-16 focus:outline-none"
                     />
                     <button
