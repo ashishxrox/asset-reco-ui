@@ -14,7 +14,9 @@
   animation: bounce 1s infinite;
 }
 
-
+.markdown-preview p{
+  line-height: inherit;
+}
 
 .markdown-preview ul,
 .markdown-preview ol {

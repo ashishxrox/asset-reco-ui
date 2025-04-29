@@ -23,6 +23,9 @@ const Chatbot = ({ assetList }) => {
     //     console.log(assetList)
     // }, [assetList])
 
+    const APIurl = "https://devapi.monetez.com/api/univerze/v1/chat" 
+    // const APIurl = "http://localhost:8000/api/univerze/v1/chat" 
+
 
     const cleanMarkdown = (text) => {
         return text
@@ -63,7 +66,7 @@ const Chatbot = ({ assetList }) => {
                 content: msg.text,
             }));
 
-            const response = await fetch('https://devapi.monetez.com/api/univerze/v1/chat', {
+            const response = await fetch(APIurl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -189,12 +192,20 @@ const Chatbot = ({ assetList }) => {
 
                                     return (
                                         <div className="flex flex-col gap-4 ]">
-                                            {remainingText && <ReactMarkdown>{remainingText}</ReactMarkdown>}
+                                            {/* {remainingText && <ReactMarkdown>{remainingText}</ReactMarkdown>} */}
+                                            {remainingText && <MarkdownPreview
+                                            source={remainingText}
+                                            className='markdown-preview text-black'
+                                            />}
                                             <MarkdownTable headers={headers} rows={rows} />
                                         </div>
                                     );
                                 } else {
-                                    return <ReactMarkdown>{cleanMarkdown(msg.text)}</ReactMarkdown>;
+                                    // return <ReactMarkdown>{cleanMarkdown(msg.text)}</ReactMarkdown>;
+                                    return <MarkdownPreview
+                                    source={msg.text}
+                                    className='markdown-preview text-black'
+                                    />
                                 }
                             })() : (
                                 <div>{msg.text}</div>

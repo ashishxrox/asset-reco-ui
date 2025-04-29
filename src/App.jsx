@@ -8,6 +8,9 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [chatReady, setChatReady] = useState(false); // NEW state
 
+  const APIurl = "https://devapi.monetez.com/api/univerze/v1/init-chat" 
+  // const APIurl = "http://localhost:8000/api/univerze/v1/init-chat" 
+
   const handleLocationSelect = async (locationId) => {
     setIsLoading(true);
     setChatReady(false); // Reset chat UI until init is done
@@ -40,7 +43,7 @@ const App = () => {
       if (!assetList) return;
   
       try {
-        const res = await fetch('https://devapi.monetez.com/api/univerze/v1/init-chat', {
+        const res = await fetch(APIurl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ asset_list: assetList }),
