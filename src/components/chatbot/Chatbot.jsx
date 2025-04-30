@@ -58,6 +58,7 @@ const Chatbot = ({ assetList }) => {
 
         try {
             const conversationId = localStorage.getItem('conversation_id');
+            console.log(conversationId)
             if (!conversationId) throw new Error('Missing conversation ID');
 
             // Build the chat history payload (excluding system messages)
