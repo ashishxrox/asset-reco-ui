@@ -194,19 +194,20 @@ const Chatbot = ({ assetList }) => {
                                     return (
                                         <div className="flex flex-col gap-4 ]">
                                             {/* {remainingText && <ReactMarkdown>{remainingText}</ReactMarkdown>} */}
-                                            {remainingText && <MarkdownPreview
+                                            {/* {remainingText && <MarkdownPreview
                                             source={remainingText}
                                             className='markdown-preview text-black'
-                                            />}
+                                            />} */}
+                                            {remainingText && <ReactMarkdown>{remainingText}</ReactMarkdown>}
                                             <MarkdownTable headers={headers} rows={rows} />
                                         </div>
                                     );
                                 } else {
-                                    // return <ReactMarkdown>{cleanMarkdown(msg.text)}</ReactMarkdown>;
-                                    return <MarkdownPreview
-                                    source={msg.text}
-                                    className='markdown-preview text-black'
-                                    />
+                                    return <ReactMarkdown>{cleanMarkdown(msg.text)}</ReactMarkdown>;
+                                    // return <MarkdownPreview
+                                    // source={msg.text}
+                                    // className='markdown-preview text-black'
+                                    // />
                                 }
                             })() : (
                                 <div>{msg.text}</div>
