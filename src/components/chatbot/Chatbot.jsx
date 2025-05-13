@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Icon from '../../assets/icon.png';
-import MarkdownPreview from "@uiw/react-markdown-preview";
 import ReactMarkdown from 'react-markdown';
 import MarkdownTable from './MarkdownTable'
+import { marked } from 'marked';
+import html2pdf from 'html2pdf.js';;
+
 import './chatbot.css';
 
-// interface Message {
-//     text: string;
-//     sender: "user" | "bot";
-//     time?: string;
-// }
 
 
 const Chatbot = ({ assetList }) => {
@@ -19,12 +16,9 @@ const Chatbot = ({ assetList }) => {
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
 
-    // useEffect(() => {
-    //     console.log(assetList)
-    // }, [assetList])
 
-    const APIurl = "https://devapi.monetez.com/api/univerze/v1/chat" 
-    // const APIurl = "http://localhost:8000/api/univerze/v1/chat" 
+    // const APIurl = "https://devapi.monetez.com/api/univerze/v1/chat"
+    const APIurl = "http://localhost:8000/api/univerze/v1/chat"
 
 
     const cleanMarkdown = (text) => {
@@ -35,9 +29,6 @@ const Chatbot = ({ assetList }) => {
             .replace(/^\s*Allocation Table\s*$/im, '')
             .trim();
     };
-
-
-
 
     const handleSend = async () => {
         if (newMessage.trim() === '') return;
@@ -109,31 +100,155 @@ const Chatbot = ({ assetList }) => {
         return tableRegex.test(markdown);
     };
 
+    // Update your parseMarkdownTable function to be more robust
     const parseMarkdownTable = (markdown) => {
-        const lines = markdown.trim().split('\n');
-        // Remove any lines that aren't part of the markdown table
-        const tableLines = lines.filter(line => line.trim().startsWith('|'));
-        const headers = tableLines[0].split('|').map(cell => cell.trim()).filter(Boolean);
-        const rows = tableLines.slice(2).map(line =>
-            line.split('|').map(cell => cell.trim()).filter(Boolean)
+        // First, extract just the table portion from the markdown
+        const tableRegex = /^\s*\|(.+)\|\s*\n\s*\|[-\s|:]+\|\s*\n((\s*\|.*\|\s*\n?)*)/m;
+        const match = markdown.match(tableRegex);
+
+        if (!match) return { headers: [], rows: [], remainingText: markdown };
+
+        const table = match[0];
+        const remainingText = markdown.replace(table, '').trim();
+
+        // Process the table lines
+        const lines = table.trim().split('\n').filter(line => line.trim().startsWith('|'));
+
+        // Extract headers (first line)
+        const headers = lines[0]
+            .split('|')
+            .map(cell => cell.trim())
+            .filter(cell => cell && !cell.match(/^-+$/)); // Filter out divider cells
+
+        // Extract rows (lines after the divider)
+        const rows = lines.slice(2).map(line =>
+            line.split('|')
+                .map(cell => cell.trim())
+                .filter((cell, i) => i > 0 && i < headers.length + 1) // Skip empty cells at start/end
         );
-        return { headers, rows };
+
+        return { headers, rows, remainingText };
     };
-
-
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') handleSend();
     };
 
+    const handleRefresh = () => {
+        console.log("clicked")
+        window.location.reload(true); // true forces a hard reload from the server
+    };
+
+    
+
+   
+
+   
+
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, isTyping]);
 
-    const handleRefresh = () => {
-        console.log("clicked")
-        window.location.reload(true); // true forces a hard reload from the server
+    const chatRef = useRef();
+
+    function convertChatToMarkdown(messages) {
+        if (!Array.isArray(messages)) {
+            console.error("Invalid input: expected an array of messages.");
+            return '';
+        }
+
+        return messages.map(msg => {
+            if (!msg || !msg.sender || !msg.text) return '';
+            const role = msg.sender === 'user' ? '### User:' : '### Assistant:';
+            return `${role}\n${msg.text.trim()}\n`;
+        }).join('\n');
+    }
+
+
+
+    function downloadMarkdownFile(markdownContent, filename = 'chat-history.md') {
+        const blob = new Blob([markdownContent], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // async function downloadMarkdownAsPDF(markdownText) {
+    //     // Convert markdown to HTML
+    //     const htmlContent = marked.parse(markdownText);
+      
+    //     // Create a temporary container to render HTML
+    //     const container = document.createElement('div');
+    //     container.innerHTML = htmlContent;
+    //     container.style.padding = '20px';
+    //     container.style.maxWidth = '600px';
+    //     container.style.fontFamily = 'Arial, sans-serif';
+    //     document.body.appendChild(container);
+      
+    //     // Render the HTML to canvas
+    //     const canvas = await html2canvas(container);
+    //     const imgData = canvas.toDataURL('image/png');
+      
+    //     // Create PDF
+    //     const pdf = new jsPDF({
+    //       orientation: 'p',
+    //       unit: 'pt',
+    //       format: 'a4',
+    //     });
+      
+    //     const imgProps = pdf.getImageProperties(imgData);
+    //     const pdfWidth = pdf.internal.pageSize.getWidth();
+    //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+    //     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    //     pdf.save('chat-conversation.pdf');
+      
+    //     // Clean up
+    //     document.body.removeChild(container);
+    //   }
+
+    const downloadMarkdownAsPDF = (markdownText) => {
+        // Convert markdown to HTML
+        const htmlContent = marked.parse(markdownText);
+      
+        // Create a container div
+        const container = document.createElement('div');
+        container.innerHTML = htmlContent;
+        container.style.padding = '20px';
+        container.style.maxWidth = '800px';
+        container.style.fontFamily = 'Arial, sans-serif';
+        container.style.fontSize = '12px';
+      
+        // Add to the body temporarily
+        document.body.appendChild(container);
+      
+        // Convert to PDF
+        const opt = {
+          margin:       0.5,
+          filename:     'chat-conversation.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2 },
+          jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+          pagebreak:    { mode: ['css', 'legacy'] } // enable auto page breaks
+        };
+      
+        html2pdf().set(opt).from(container).save().then(() => {
+          document.body.removeChild(container);
+        });
       };
+
+
+    const handleGenerateMarkdown = () => {
+        console.log(messages)
+        const markdown = convertChatToMarkdown(messages);
+        downloadMarkdownFile(markdown);
+        downloadMarkdownAsPDF(markdown);
+        console.log(markdown)
+    }
+
 
 
 
@@ -149,16 +264,21 @@ const Chatbot = ({ assetList }) => {
                         <h2 className='text-xl font-bold text-white'>Univerze AI</h2>
                     </div>
                 </div>
-                <div className='basis-[20%] w-full h-full flex justify-center items-center'>
-                    <button 
-                    onClick={()=>{handleRefresh()}}
-                    className="px-6 py-3 bg-[white] text-[#30965f] cursor-pointer rounded-[20px] shadow-md hover:shadow-lg  transition-all duration-300 text-lg font-semibold tracking-wide">
+                <div className='basis-[40%] w-full h-full flex justify-around items-center'>
+                    <button
+                        onClick={handleGenerateMarkdown}
+                        className="px-6 py-3 bg-[white] text-[#30965f] cursor-pointer rounded-[20px] shadow-md hover:shadow-lg  transition-all duration-300 text-lg font-semibold tracking-wide">
+                        Generate PDF Report
+                    </button>
+                    <button
+                        onClick={() => { handleRefresh() }}
+                        className="px-6 py-3 bg-[white] text-[#30965f] cursor-pointer rounded-[20px] shadow-md hover:shadow-lg  transition-all duration-300 text-lg font-semibold tracking-wide">
                         Start New Chat
                     </button>
                 </div>
 
             </div>
-            <div className='basis-[70%] w-full overflow-y-auto overflow-x-hidden p-4 bg-white scroll-div'>
+            <div className='basis-[70%] w-full overflow-y-auto overflow-x-hidden p-4 bg-white scroll-div' id='chat-container' ref={chatRef}>
                 {/* <div className=' bg-[red] h-[100px] w-[500px] z-[9] top-[-60px] right-[16px] pr-[50px] relative waves flex justify-end items-center'>
                     <p className='text-white text-[18px] mt-[5px] font-[500]'>Your Expert Media Planner</p>
                 </div> */}
@@ -263,3 +383,9 @@ const Chatbot = ({ assetList }) => {
 }
 
 export default Chatbot
+
+
+
+
+
+
