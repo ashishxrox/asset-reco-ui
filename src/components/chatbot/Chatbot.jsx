@@ -18,8 +18,8 @@ const Chatbot = ({ assetList, setLocation, location }) => {
     const messagesEndRef = useRef(null);
 
 
-    // const APIurl = "https://devapi.monetez.com/api/univerze/v1/chat"
-    const APIurl = "http://localhost:8000/api/univerze/v1/chat"
+    const APIurl = "https://devapi.monetez.com/api/univerze/v1/chat"
+    // const APIurl = "http://localhost:8000/api/univerze/v1/chat"
 
 
     const cleanMarkdown = (text) => {

@@ -378,8 +378,8 @@ const App = () => {
     
   },[location])
 
-  // const APIurl = "https://devapi.monetez.com/api/univerze/v1/init-chat" 
-  const APIurl = "http://localhost:8000/api/univerze/v1/init-chat" 
+  const APIurl = "https://devapi.monetez.com/api/univerze/v1/init-chat" 
+  // const APIurl = "http://localhost:8000/api/univerze/v1/init-chat" 
 
   const handleLocationSelect = async (locationId) => {
     setIsLoading(true);
@@ -403,12 +403,17 @@ const App = () => {
 
   function formatAssetsList(assets) {
     return (assets || []).map(asset => {
+      console.log(asset)
       const typeDesc = asset_type_desc.find(type => type.name === asset.asset_type_name);
       const description = typeDesc ? typeDesc.description : 'No description available';
   
       return `- Asset Name: ${asset.asset_name} | Asset Rate: ₹${asset.rate} | Asset Details: ${asset.details || 'N/A'} | Asset Location: ${asset.company_name} | Frequency: ${asset.frequency || 'N/A'} | Reach: ${asset.reach || 'N/A'} | Asset Type: ${asset.asset_type_name || 'N/A'} | Quantity: ${asset.quantity || 'N/A'} | Type Description: ${description}`;
     }).join('\n');
   }
+
+  useEffect(()=>{
+    console.log(assetList)
+  },[assetList])
 
   // 🧠 React to changes in assetList
   useEffect(() => {
