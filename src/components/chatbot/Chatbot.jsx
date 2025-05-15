@@ -9,11 +9,12 @@ import './chatbot.css';
 
 
 
-const Chatbot = ({ assetList }) => {
+const Chatbot = ({ assetList, setLocation, location }) => {
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [locationData, setLocationDate] = useState(null)
     const messagesEndRef = useRef(null);
 
 
@@ -65,11 +66,13 @@ const Chatbot = ({ assetList }) => {
                     conversation_id: conversationId,
                     user_input: newMessage,
                     messages: chatHistory,
+                    // loc: location? location : null
                 }),
             });
 
             const data = await response.json();
-            console.log(data.data)
+            console.log(data.data.campaignMemory?.location_id)
+            setLocation(data.data.campaignMemory?.location_id)
             const modifiedMessage = (data.data.reply || '😓 No response from AI.').replace(/\n\n/g, '\n');
             console.log(modifiedMessage)
 
@@ -138,12 +141,6 @@ const Chatbot = ({ assetList }) => {
         console.log("clicked")
         window.location.reload(true); // true forces a hard reload from the server
     };
-
-    
-
-   
-
-   
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const App = () => {
   const [assetList, setAssetList] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [location, setLocation] = useState(null)
   const [chatReady, setChatReady] = useState(false); // NEW state
   const asset_type_desc = [
     {
@@ -42,7 +43,8 @@ const App = () => {
     },
     {
       "name": "Car / Bike Displays",
-      "description": "Vehicles used as moving billboards or parked at strategic spots to maximize brand visibility on the go."
+      "description": "Strategically positioned vehicles used to showcase newly launched cars or bikes, allowing people to explore the vehicle up close, gather information, and engage directly with the brand."
+
     },
     {
       "name": "Community Newsletter",
@@ -368,6 +370,14 @@ const App = () => {
      
   ]
 
+  useEffect(()=>{
+    if(location){
+      console.log(location)
+      handleLocationSelect(location)
+    }
+    
+  },[location])
+
   // const APIurl = "https://devapi.monetez.com/api/univerze/v1/init-chat" 
   const APIurl = "http://localhost:8000/api/univerze/v1/init-chat" 
 
@@ -376,7 +386,7 @@ const App = () => {
     setChatReady(false); // Reset chat UI until init is done
 
     try {
-      const response = await fetch('https://devapi.monetez.com/api/univerze/v1/assetsforMediaPlanner', {
+      const response = await fetch('https://api.monetez.com/api/univerze/v1/assetsforMediaPlanner', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: locationId }),
@@ -437,7 +447,7 @@ const App = () => {
   return (
     <div className='h-screen w-full flex justify-center items-center bg-gray-100'>
       <AnimatePresence mode="wait">
-        {chatReady ? (
+        
           <motion.div
             key="chatbot"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -446,26 +456,8 @@ const App = () => {
             transition={{ duration: 0.5 }}
             className="w-full h-full flex justify-center items-center"
           >
-            <Chatbot assetList={assetList} />
+            <Chatbot assetList={assetList} location={location} setLocation={setLocation}/>
           </motion.div>
-        ) : (
-          <motion.div
-            key="selector"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: isLoading ? 1.1 : 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="bg-[#2f965f] rounded-2xl shadow-xl p-8 flex justify-center items-center"
-          >
-            {isLoading ? (
-              <div className="flex justify-center items-center h-40 w-80">
-                <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" />
-              </div>
-            ) : (
-              <LocationSelector onLocationSelect={handleLocationSelect} />
-            )}
-          </motion.div>
-        )}
       </AnimatePresence>
     </div>
   );
