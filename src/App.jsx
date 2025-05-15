@@ -384,7 +384,7 @@ const App = () => {
     setChatReady(false); // Reset chat UI until init is done
 
     try {
-      const response = await fetch('https://devapi.monetez.com/api/univerze/v1/assetsforMediaPlanner', {
+      const response = await fetch('https://api.monetez.com/api/univerze/v1/assetsforMediaPlanner', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: locationId }),
