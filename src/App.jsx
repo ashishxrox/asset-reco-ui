@@ -44,6 +44,7 @@ const App = () => {
     {
       "name": "Car / Bike Displays",
       "description": "Strategically positioned vehicles used to showcase newly launched cars or bikes, allowing people to explore the vehicle up close, gather information, and engage directly with the brand."
+
     },
     {
       "name": "Community Newsletter",
@@ -376,6 +377,7 @@ const App = () => {
     }
     
   },[location])
+
   // const APIurl = "https://devapi.monetez.com/api/univerze/v1/init-chat" 
   const APIurl = "http://localhost:8000/api/univerze/v1/init-chat" 
 
